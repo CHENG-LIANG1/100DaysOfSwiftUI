@@ -16,6 +16,8 @@ struct AddBookView: View {
     @State private var genre = "Fantasy"
     @State private var review = ""
     
+    @State private var showingAlert = false
+    
     let genres = ["Fantasy", "Horror", "Kids", "History", "Poetry",
     "Romance", "Thriller"]
     
@@ -37,27 +39,39 @@ struct AddBookView: View {
                     TextEditor(text: $review)
                     RatingView(rating: $rating, offColor: Color.gray.opacity(0.5))
                 }header: {
-                    Text("Write a review")
+                    Text("Write a review (Optional)")
                 }
                 
                 Section {
                     Button("Save"){
-                        let newBook = Book(context: moc)
-                        newBook.id = UUID()
-                        newBook.title = title
-                        newBook.author = author
-                        newBook.rating = Int16(rating)
-                        newBook.genre = genre
-                        newBook.review = review
+                        if(title.isEmpty || author.isEmpty || genre.isEmpty){
+                            showingAlert = true
+                        }else {
+                            let newBook = Book(context: moc)
+                            newBook.id = UUID()
+                            newBook.title = title
+                            newBook.author = author
+                            newBook.rating = Int16(rating)
+                            newBook.genre = genre
+                            newBook.review = review
+                            newBook.date = Date.now
+                            try? moc.save()
+                            dismiss()
+                        }
                         
-                        try? moc.save()
-                        dismiss()
                         
+
                         
                     }
                 }
+                .alert("Invalid book!", isPresented: $showingAlert) {
+                    Button("Got it") {}
+                } message: {
+                    Text("Please fill all the fields.")
+                }
             }
         }.navigationTitle("Add Book")
+        
         
     }
 }

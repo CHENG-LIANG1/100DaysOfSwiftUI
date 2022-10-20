@@ -45,8 +45,11 @@ struct ContentView: View {
     ]) var books: FetchedResults<Book>
     
     @State private var showingAddScreen = false
+    let df = DateFormatter()
 
     var body: some View {
+        
+
         NavigationView {
             List{
                 ForEach(books) {
@@ -57,13 +60,21 @@ struct ContentView: View {
                         HStack {
                             EmojiRatingView(rating: book.rating)
                                 .font(.largeTitle)
-                        }
-                        
-                        VStack(alignment: .leading) {
-                            Text(book.title ?? "Unknown")
-                                .font(.headline)
-                            Text(book.author ?? "Unknown")
-                    
+                            
+                            
+                            VStack(alignment: .leading) {
+                                Text(book.title ?? "Unknown")
+                                    .font(.system(size: 18))
+                                    .foregroundColor(book.rating < 3 ? Color.red : Color.black)
+                                Text(book.author ?? "Unknown")
+                                    .font(.system(size: 10))
+                                
+                            }
+                            
+                            Spacer()
+                            
+                            Text(df.string(from: book.date ?? Date.now) )
+                                .font(.system(size: 10))
                         }
                     }
                 }
@@ -87,6 +98,10 @@ struct ContentView: View {
         }.sheet(isPresented: $showingAddScreen) {
             AddBookView()
         }
+        .onAppear {
+            df.dateFormat = "MMM d, yyyy"
+        }
+        
     }
     
     func deleteBooks(at offsets: IndexSet) {
