@@ -52,8 +52,7 @@ struct ContentView: View {
 
         NavigationView {
             List{
-                ForEach(books) {
-                    book in
+                ForEach(books) {book in
                     NavigationLink{
                         DetailView(book: book)
                     } label: {
