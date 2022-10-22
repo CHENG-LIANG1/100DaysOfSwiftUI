@@ -15,7 +15,10 @@ class DataController: ObservableObject {
         container.loadPersistentStores { des, err in
             if let err = err {
                 print("Failed")
+                return
             }
+            
+            self.container.viewContext.mergePolicy = NSMergePolicy.mergeByPropertyObjectTrump
         }
     }
      
