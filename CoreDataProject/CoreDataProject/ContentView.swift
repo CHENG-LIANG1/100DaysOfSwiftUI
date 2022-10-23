@@ -88,7 +88,10 @@ struct ContentView: View {
 //MARK: Dynamic Filtering
         
         VStack {
-            FilteredList(filter: lastNameFilter)
+            FilteredList(filterKey: "lastname", filterValue: lastNameFilter) { (singer: Singer) in
+                
+                Text("\(singer.wrappedFirstName) \(singer.wrappedLastName)")
+            }
             
             
             Button("Added Singers") {
