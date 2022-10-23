@@ -13,7 +13,7 @@ class DataController: ObservableObject {
     
     init(){
         container.loadPersistentStores { des, err in
-            if let err = err {
+            if err != nil {
                 print("Failed")
                 return
             }
