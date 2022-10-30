@@ -15,6 +15,8 @@ struct ContentView: View {
     
     @State private var inputImage: UIImage?
     
+    @State private var processedImage: UIImage?
+    
     @State private var showingImagePicker = false
     
     @State private var filterIntensity = 0.5
@@ -143,6 +145,9 @@ struct ContentView: View {
     
     
     func save(){
+        guard let processedImage = processedImage else { return }
+        let imageSaver = ImageSaver()
+        imageSaver.writeToPhotoAlbum(image: processedImage)
         
     }
     
@@ -157,12 +162,12 @@ struct ContentView: View {
             currentFilter.setValue(filterIntensity, forKey: kCIInputIntensityKey)
         }
         
-        if inputKeys.contains(kCIInputIntensityKey){
+        if inputKeys.contains(kCIInputScaleKey){
             currentFilter.setValue(filterIntensity * 10, forKey: kCIInputScaleKey)
         }
         
         
-        if inputKeys.contains(kCIInputIntensityKey){
+        if inputKeys.contains(kCIInputRadiusKey){
             currentFilter.setValue(filterIntensity * 200, forKey: kCIInputRadiusKey)
         }
         
@@ -172,6 +177,7 @@ struct ContentView: View {
         if let cgimg = context.createCGImage(outputImage, from: outputImage.extent) {
             let uiImage = UIImage(cgImage: cgimg)
             image = Image(uiImage: uiImage)
+            processedImage = uiImage
         }
     }
     
