@@ -21,6 +21,10 @@ struct ContentView: View {
     
     @State private var filterIntensity = 0.5
     
+    @State private var filterScale = 0.5
+    
+    @State private var filterRadius = 0.5
+    
     @State private var currentFilter: CIFilter = CIFilter.sepiaTone()
     
     let context = CIContext()
@@ -76,6 +80,23 @@ struct ContentView: View {
                 }.padding(.vertical)
                 
                 HStack {
+                    Text("Radius")
+                    Slider(value: $filterRadius)
+                        .onChange(of: filterRadius) { _ in
+                            applyProcessing()
+                        }
+                }.padding(.vertical)
+
+
+                HStack {
+                    Text("Scale")
+                    Slider(value: $filterScale)
+                        .onChange(of: filterScale) { _ in
+                            applyProcessing()
+                        }
+                }.padding(.vertical)
+                
+                HStack {
                     Button("Change Filter") {
                         showingFilterSheet = true
                     }
@@ -83,6 +104,7 @@ struct ContentView: View {
                     Spacer()
                     
                     Button("Save", action: save)
+                        .disabled(inputImage == nil)
                 }
                 .padding([.horizontal, .bottom])
                 .navigationTitle("Instafilter")
@@ -91,6 +113,19 @@ struct ContentView: View {
                     ImagePicker(image: $inputImage)
                 }
                 .confirmationDialog("Select a filter", isPresented: $showingFilterSheet) {
+                    
+                    Button("Gaussian Blur") {
+                        setFilter(CIFilter.gaussianBlur())
+                    }
+                    
+                    
+                    Button("Box Blur") {
+                        setFilter(CIFilter.boxBlur())
+                    }
+                    
+
+
+                    
                     Button("Cystalize") {
                         setFilter(CIFilter.crystallize())
                     }
@@ -99,10 +134,6 @@ struct ContentView: View {
                     }
 
                     
-                    Button("Gaussian Blur") {
-                        setFilter(CIFilter.gaussianBlur())
-                    }
-
                     
                     Button("Pixellate") {
                         setFilter(CIFilter.pixellate())
@@ -122,6 +153,14 @@ struct ContentView: View {
                     Button("Vignette") {
                         setFilter(CIFilter.vignette())
                     }
+                    
+                    
+                    Button("Affine Tile") {
+                        setFilter(CIFilter.affineTile())
+                    }
+                    
+
+
 
                     Button("Cancel", role: .cancel) {}
 
@@ -148,6 +187,13 @@ struct ContentView: View {
         guard let processedImage = processedImage else { return }
         let imageSaver = ImageSaver()
         imageSaver.writeToPhotoAlbum(image: processedImage)
+        imageSaver.successHandler = {
+            print("Success")
+        }
+        
+        imageSaver.errorHandler = {
+            print("Something went wrong, \($0.localizedDescription)")
+        }
         
     }
     
@@ -163,12 +209,12 @@ struct ContentView: View {
         }
         
         if inputKeys.contains(kCIInputScaleKey){
-            currentFilter.setValue(filterIntensity * 10, forKey: kCIInputScaleKey)
+            currentFilter.setValue(filterScale * 10, forKey: kCIInputScaleKey)
         }
         
         
         if inputKeys.contains(kCIInputRadiusKey){
-            currentFilter.setValue(filterIntensity * 200, forKey: kCIInputRadiusKey)
+            currentFilter.setValue(filterRadius * 200, forKey: kCIInputRadiusKey)
         }
         
         
